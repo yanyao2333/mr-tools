@@ -19,7 +19,3 @@ def delete_hard_link_tool(source_filepath, find_path=None, use_cache: bool = Tru
     for file_path in files:
         if os.path.exists(file_path):
             os.remove(file_path)
-
-
-def restart():
-    url = 'https://mr.05730116.xyz:88/api/common/restart_app'
