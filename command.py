@@ -3,6 +3,8 @@ from mbot.core.params import ArgSchema, ArgType
 from mbot.core.plugins import plugin, PluginCommandContext, PluginCommandResponse
 
 from .tools import *
+from .os_tools import *
+from .plugin_tools import *
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -63,3 +65,41 @@ def delete_hard_link(
             flag = False
     delete_hard_link_tool(src, find_path, flag)
     return PluginCommandResponse(True, f'删除硬链完成')
+
+
+def get_plugins():
+    return list_plugins()
+
+
+@plugin.command(name='install_plugin', title='安装插件', desc='', icon='',
+                run_in_background=True)
+def install_plugin(
+        ctx: PluginCommandContext,
+        download_url: ArgSchema(ArgType.String, '插件下载地址', '')
+):
+    _LOGGER.info("安装插件")
+    install(download_url)
+    return PluginCommandResponse(True, f'安装完成')
+
+
+@plugin.command(name='upgrade_plugin', title='升级插件', desc='', icon='',
+                run_in_background=True)
+def upgrade_plugin(
+        ctx: PluginCommandContext,
+        plugin: ArgSchema(ArgType.Enum, '选择插件', '', enum_values=get_plugins, multi_value=False),
+        download_url: ArgSchema(ArgType.String, '插件下载地址', '')
+):
+    _LOGGER.info("升级插件")
+    upgrade(plugin_name=plugin['plugin_name'], download_url=download_url)
+    return PluginCommandResponse(True, f'升级插件完成')
+
+
+@plugin.command(name='reload_plugin', title='重启插件', desc='', icon='',
+                run_in_background=True)
+def reload_plugin(
+        ctx: PluginCommandContext,
+        plugin: ArgSchema(ArgType.Enum, '选择插件', '', enum_values=get_plugins, multi_value=False)
+):
+    _LOGGER.info("重启插件")
+    load(plugin['plugin_path'])
+    return PluginCommandResponse(True, f'重启插件完成')
